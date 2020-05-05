@@ -18,4 +18,5 @@ It also calculates the average return, average annualized return and volatility 
 ![Image of price chart](https://github.com/Audreysin/Portfolio-analysis/blob/master/Price%20chart.png)
 
 **Cumulative return chart:**
+
 ![Image of cumulative return chart](https://github.com/Audreysin/Portfolio-analysis/blob/master/Cum_return.png)
