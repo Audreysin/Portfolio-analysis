@@ -6,33 +6,38 @@ import io
 import sys
 import matplotlib.pyplot as plt
 
-
 class Ticker:
+    # Class to store the symbol and the weight of the stock entered by the user
+
+    #  Constructor requiring 2 parameter
     def __init__(self, symbol, weight):
         self.symbol = symbol
         self.weight = weight
 
+    #  Accessors to the fields symbol and weight
     def getSymbol(self):
         return self.symbol
 
     def getWeight(self):
         return self.weight
-    
+
+    # Add the amount value to the existing weight
     def incrementWeight(self, value):
         self.weight += value
 
 
 # Global variables
-portfolio = []
-tickers = []
-weights = []
-portfolioDict = {}
+portfolio = [] # Stores Ticker objects
+tickers = [] # Stores the ticker symbols in alphabetical order
+weights = [] # Stores the weights, order depends on the tickers list
+portfolioDict = {} # Stores key value pairs of [Symbol:weight], a dictionary is used to improve the efficiecy of weight lookup
 
 def introOutput():
+    #  Prints the introduction instrustion line
     print("Please enter the stock symbol followed by its weight in the portfolio. Please enter \"Done\" your portfolio is complete.")
 
 def isValidTicker(_ticker):
-    # data = yf.download(_ticker, '2019-01-01', date.today())
+    #  Checks if the symbol _ticker is a valid ticker
     data = yf.Ticker(_ticker)
     return not(data.history(period="max").empty)
 
@@ -96,6 +101,8 @@ def processInput(input):
     return(True, stockSym, float(weightStr)/divisor)
 
 def addToList(ticker, weight):
+    # Adds the ticker and its weight to the list of Ticker objects "portfolio" if the ticker was entered for the first time
+    # Otherwise, increments the existing weight by the amount "weight"
     for index in range(len(portfolio)):
         if portfolio[index].getSymbol() == ticker:
             portfolio[index].incrementWeight(weight)
@@ -103,6 +110,8 @@ def addToList(ticker, weight):
     portfolio.append(Ticker(ticker, weight))
 
 def getPortfolioInput():
+    # Takes input from the user. If the input is valid, the ticker is added to the portfolio.
+    # Otherwise, an appropriate message is output to std io
     print("Enter new ticker:")
     lineInput = input()
     if (lineInput == "Done"):
@@ -126,6 +135,7 @@ def getPortfolioInput():
     getPortfolioInput()
 
 def fillList():
+    # Fills the lists "tickers", "weights", "portfolioDict". Sorts "tickers" in alphabetical order.
     tickers.clear()
     weights.clear()
     for i in range(len(portfolio)):
@@ -138,11 +148,13 @@ def fillList():
     
 
 def adjustWeights():
+    # If the sum of the weights given is not "1"/"100%" this functions adjust the weights to make the sum 100% while keep the same proportion
     theSum = sum(weights)
     for i in range(len(weights)):
         weights[i] /= theSum
 
 def getPriceChart(lst, fromDate):
+    # Plots the stock price chart
     df = yf.download(lst,fromDate)['Adj Close']
     df.plot()
     plt.legend()
@@ -153,6 +165,7 @@ def getPriceChart(lst, fromDate):
     plt.show()
 
 def getCummulativePortfolioReturn(ticker_lst, weight_lst, fromDate):
+    # Plots the cumulative return chart and returns the dataframe containing the daily returns
     prices = yf.download(ticker_lst, fromDate)['Adj Close']
     dailyReturns = prices.pct_change()[1:]
     weighted_returns = dailyReturns * weight_lst
@@ -168,12 +181,15 @@ def getCummulativePortfolioReturn(ticker_lst, weight_lst, fromDate):
     return dailyReturns
 
 def getAvgReturn(dailyReturnsdf):
+    # returns the average returns of the portfolio
     return np.mean(dailyReturnsdf['Portfolio'])
 
 def getStd(dailyReturnsdf):
+    # returns the standard deviation of the daily returns
     return np.std(dailyReturnsdf['Portfolio'])
 
 def getPortfolioVolatilty(dailyReturnsdf):
+    # returns the volatility of the portfolio
     cov_matrix = dailyReturnsdf[tickers].cov()
     print(cov_matrix)
     weight_arr = np.array(weights)
