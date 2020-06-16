@@ -6,28 +6,7 @@ import io
 import sys
 import matplotlib.pyplot as plt
 
-class Ticker:
-    # Class to store the symbol and the weight of the stock entered by the user
-
-    #  Constructor requiring 2 parameter
-    def __init__(self, symbol, weight):
-        self.symbol = symbol
-        self.weight = weight
-
-    #  Accessors to the fields symbol and weight
-    def getSymbol(self):
-        return self.symbol
-
-    def getWeight(self):
-        return self.weight
-
-    # Add the amount value to the existing weight
-    def incrementWeight(self, value):
-        self.weight += value
-
-
 # Global variables
-portfolio = [] # Stores Ticker objects
 tickers = [] # Stores the ticker symbols in alphabetical order
 weights = [] # Stores the weights, order depends on the tickers list
 portfolioDict = {} # Stores key value pairs of [Symbol:weight], a dictionary is used to improve the efficiecy of weight lookup
@@ -103,11 +82,11 @@ def processInput(input):
 def addToList(ticker, weight):
     # Adds the ticker and its weight to the list of Ticker objects "portfolio" if the ticker was entered for the first time
     # Otherwise, increments the existing weight by the amount "weight"
-    for index in range(len(portfolio)):
-        if portfolio[index].getSymbol() == ticker:
-            portfolio[index].incrementWeight(weight)
-            return
-    portfolio.append(Ticker(ticker, weight))
+    
+    if ticker in portfolioDict:
+        portfolioDict[ticker] += weight
+    else:
+        portfolioDict[ticker] = weight
 
 def getPortfolioInput():
     # Takes input from the user. If the input is valid, the ticker is added to the portfolio.
@@ -134,17 +113,16 @@ def getPortfolioInput():
         print("Your input is invalid...")
     getPortfolioInput()
 
-def fillList():
+def fillList(portfolioDictionary):
     # Fills the lists "tickers", "weights", "portfolioDict". Sorts "tickers" in alphabetical order.
     tickers.clear()
     weights.clear()
-    for i in range(len(portfolio)):
-        tickers.append(portfolio[i].getSymbol())
-        # weights.append(portfolio[i].getWeight())
-        portfolioDict[portfolio[i].getSymbol()] = portfolio[i].getWeight()
+
+    for tkr in portfolioDictionary:
+        tickers.append(tkr)
     tickers.sort()
     for index in range(len(tickers)):
-        weights.append(portfolioDict[tickers[index]])
+        weights.append(portfolioDictionary[tickers[index]])
     
 
 def adjustWeights():
@@ -197,7 +175,7 @@ def getPortfolioVolatilty(dailyReturnsdf):
 
 introOutput()
 getPortfolioInput()
-fillList()
+fillList(portfolioDict)
 adjustWeights()
 getPriceChart(tickers, "2020-01-01")
 returnDf = getCummulativePortfolioReturn(tickers, weights, '2020-01-01')
