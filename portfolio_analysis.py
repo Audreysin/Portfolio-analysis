@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 # Global variables
 tickers = [] # Stores the ticker symbols in alphabetical order
 weights = [] # Stores the weights, order depends on the tickers list
-portfolioDict = {} # Stores key value pairs of [Symbol:weight], a dictionary is used to improve the efficiecy of weight lookup
+portfolioDict = {} # Stores key value pairs of [Symbol:weight]
 
 def introOutput():
     #  Prints the introduction instrustion line
@@ -80,7 +80,7 @@ def processInput(input):
     return(True, stockSym, float(weightStr)/divisor)
 
 def addToList(ticker, weight):
-    # Adds the ticker and its weight to the list of Ticker objects "portfolio" if the ticker was entered for the first time
+    # Adds the ticker and its weight to a portfolioDict if the ticker was entered for the first time
     # Otherwise, increments the existing weight by the amount "weight"
     
     if ticker in portfolioDict:
@@ -114,7 +114,7 @@ def getPortfolioInput():
     getPortfolioInput()
 
 def fillList(portfolioDictionary):
-    # Fills the lists "tickers", "weights", "portfolioDict". Sorts "tickers" in alphabetical order.
+    # Fills the lists "tickers", "weights". Sorts "tickers" in alphabetical order.
     tickers.clear()
     weights.clear()
 
